@@ -3,22 +3,28 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation as JMS;
-
 /**
  * Result
  *
  * @ORM\Table(name="result", indexes={@ORM\Index(name="user_id", columns={"user_id"})})
  * @ORM\Entity
- *  * @Hateoas\Relation(
- *     name="self",
- *     href="expr(constant('\\App\\Controller\\ApiResultController::RUTA_API') ~ '/' ~ object.getId())"
- * )
  * @JMS\XmlRoot("result")
  */
-class Result
-{
+class Result{
+    /**
+     * Result constructor.
+     * @param int $result
+     * @param int $userId
+     * @param \DateTime $time
+     */
+    public function __construct($result, $userId, $time)
+    {
+        $this->result = $result;
+        $this->userId = $userId;
+        $this->time = $time;
+    }
+
     /**
      * @var int
      *

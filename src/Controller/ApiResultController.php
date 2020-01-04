@@ -11,8 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -29,7 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ApiResultController extends AbstractController
 {
-    public const RUTA_API = '/api/v1/result';
+    public const RUTA_API = '/api/v1/results';
 
     /** @var EntityManagerInterface $entityManager */
     private $entityManager;
@@ -67,8 +65,17 @@ class ApiResultController extends AbstractController
         $result = $this->entityManager
             ->getRepository(Result::class)
             ->findAll();
-
         $format = Utils::getFormat($request);
+
+        // No hay results?
+        if (empty($result)) {
+            $message = new Message(Response::HTTP_NOT_FOUND, Response::$statusTexts[404]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
 
         return Utils::apiResponse(
             Response::HTTP_OK,
