@@ -245,6 +245,30 @@ paths:
               description: 'List of HTTP supported methods'
               schema:
                 type: string
+  /results:
+    get:
+      tags:
+        - Result
+      summary: Returns all results
+      description: 'Returns all results from the system that the user has access to.'
+      operationId: api_result_cget
+      responses:
+        '200':
+          description: 'Array of results'
+          content:
+            application/json:
+              schema:
+                properties:
+                  usuarios: { description: 'Results array', type: array, items: { $ref: '#/components/schemas/Result' } }
+                type: object
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
 components:
   schemas:
     LoginRequestBody:
@@ -371,3 +395,6 @@ tags:
   -
     name: Users
     description: 'User management'
+  -
+    name: Result
+    description: 'Result management'
