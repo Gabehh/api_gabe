@@ -294,14 +294,14 @@ paths:
         '403':
           $ref: '#/components/responses/403_Forbidden_Response'
         '422':
-          description: '`Unprocessable entity`:  result, userId or time is left out'
+          description: '`Unprocessable entity`:  result or userId is left out'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
               example:
                 code: 422
-                message: '`Unprocessable entity`:  result, userId or time is left out'
+                message: '`Unprocessable entity`:  result or userId time is left out'
       security:
         - MiWApiSecurity: []
   /results/{resultId}:
@@ -339,6 +339,45 @@ paths:
       responses:
         '204':
           description: 'Result deleted &lt;Response body is empty&gt;'
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
+    put:
+      tags:
+        - Result
+      summary: 'Updates a result'
+      description: 'Updates the user identified by `resultId`.'
+      operationId: api_result_put
+      parameters:
+        - $ref: '#/components/parameters/resultId'
+      requestBody:
+        description: '`Result` data to update'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultsData'
+      responses:
+        '209':
+          description: '`Content Returned`: result previously existed and is now updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Results'
+        '400':
+          description: '`Bad Request`: The user does not exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 400
+                message: '`Bad Request`: The user does not exists'
         '401':
           $ref: '#/components/responses/401_Unauthorized_Response'
         '403':

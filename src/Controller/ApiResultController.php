@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Entity\Result;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -207,6 +208,95 @@ class ApiResultController extends AbstractController
         );
     }
 
+
+    /**
+     * Summary: Updates a result
+     * Notes: Updates the result identified by &#x60;resultId&#x60;.
+     *
+     * @param Request $request request
+     * @param int resultId Result id
+     * @return  Response
+     * @Route(
+     *     "/{resultId}.{_format}",
+     *     defaults={"_format": null},
+     *     requirements={
+     *          "resultId": "\d+",
+     *         "_format": "json|xml"
+     *     },
+     *     methods={ Request::METHOD_PUT },
+     *     name="put"
+     * )
+     *
+     * @Security(
+     *     expression="is_granted('IS_AUTHENTICATED_FULLY')",
+     *     statusCode=401,
+     *     message="Invalid credentials."
+     * )
+     * @throws Exception
+     */
+    public function updateResult(Request $request, int $resultId): Response
+    {
+        // Puede editar otro usuario diferente sólo si tiene ROLE_ADMIN
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw new HttpException(   // 403
+                Response::HTTP_FORBIDDEN,
+                "`Forbidden`: you don't have permission to access"
+            );
+        }
+
+        $body = $request->getContent();
+        $postData = json_decode($body, true);
+        $format = Utils::getFormat($request);
+
+        $result = $this->entityManager
+            ->getRepository(Result::class)
+            ->findOneBy([ 'id' => $resultId ]);
+
+        if (null === $result) {    // 404 - Not Found
+            $message = new Message(Response::HTTP_NOT_FOUND, Response::$statusTexts[404]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
+        if (isset($postData['userId'])) {
+            $user_exist = $this->entityManager
+                ->getRepository(User::class)
+                ->findOneBy([ 'id' => $postData['userId'] ]);
+
+            if (null === $user_exist) {    // 400 - Bad Request
+                $message = new Message(Response::HTTP_BAD_REQUEST, Response::$statusTexts[400]);
+                return Utils::apiResponse(
+                    $message->getCode(),
+                    [ 'message' => $message ],
+                    $format
+                );
+            }
+            $result->setUserId($postData['userId']);
+        }
+
+        // result
+        if (isset($postData['result'])) {
+            $result->setResult($postData['result']);
+        }
+
+        // comment
+        if (isset($postData['comment'])) {
+            $result->setComment($postData['comment']);
+        }
+
+        $result->setTime(new \DateTime('now'));
+
+        $this->entityManager->flush();
+
+        return Utils::apiResponse(
+            209,                        // 209 - Content Returned
+            [ 'result' => $result ],
+            $format
+        );
+    }
 
     /**
      * Summary: Deletes a result
