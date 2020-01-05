@@ -328,6 +328,25 @@ paths:
           $ref: '#/components/responses/404_Resource_Not_Found_Response'
       security:
         - MiWApiSecurity: []
+    delete:
+      tags:
+        - Result
+      summary: 'Deletes a result'
+      description: 'Deletes the result identified by `resultId`.'
+      operationId: api_result_delete
+      parameters:
+        - $ref: '#/components/parameters/resultId'
+      responses:
+        '204':
+          description: 'Result deleted &lt;Response body is empty&gt;'
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
 components:
   schemas:
     LoginRequestBody:
@@ -435,10 +454,6 @@ components:
           description: 'User Id'
           type: integer
           format: int64
-        time:
-          description: 'Time'
-          type: string
-          format: date-time
         comment:
           description: 'comment'
           type: string
@@ -446,7 +461,6 @@ components:
       example:
         result: 10
         userId: 1
-        time: 2020-01-01
         comment: "test"
     Message:
       required:

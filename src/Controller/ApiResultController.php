@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Message;
 use App\Entity\Result;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,6 +107,7 @@ class ApiResultController extends AbstractController
      *     statusCode=401,
      *     message="Invalid credentials."
      * )
+     * @throws Exception
      */
     public function createResult(Request $request): Response
     {
@@ -117,18 +119,15 @@ class ApiResultController extends AbstractController
             );
         }
 
-
         $data = json_decode(
             $request->getContent(),
             true
         );
 
-        //$body = $request->getContent();
-        //$postData = json_decode($body, true);
         $format = Utils::getFormat($request);
 
 
-        if (!isset($data['result'],$data['userId'],$data['time'])) {
+        if (!isset($data['result'],$data['userId'])) {
             // 422 - Unprocessable Entity Faltan datos
             $message = new Message(Response::HTTP_UNPROCESSABLE_ENTITY, Response::$statusTexts[422]);
             return Utils::apiResponse(
@@ -143,9 +142,10 @@ class ApiResultController extends AbstractController
         $result = new Result(
             $data['result'],
             $data['userId'],
-            $data['time']
+            $data['time'] = new \DateTime('now')
         );
-        // roles
+
+        // comment
         if (isset($data['comment'])) {
             $result->setComment($data['comment']);
         }
@@ -205,5 +205,61 @@ class ApiResultController extends AbstractController
             [ 'result' => $result ],
             $format
         );
+    }
+
+
+    /**
+     * Summary: Deletes a result
+     * Notes: Deletes the result identified by &#x60;resultId&#x60;.
+     *
+     * @param   Request $request
+     * @param   int $resultId Result id
+     * @return  Response
+     * @Route(
+     *     "/{resultId}.{_format}",
+     *     defaults={"_format": null},
+     *     requirements={
+     *          "resultId": "\d+",
+     *         "_format": "json|xml"
+     *     },
+     *     methods={ Request::METHOD_DELETE },
+     *     name="delete"
+     * )
+     *
+     * @Security(
+     *     expression="is_granted('IS_AUTHENTICATED_FULLY')",
+     *     statusCode=401,
+     *     message="Invalid credentials."
+     * )
+     */
+    public function deleteResult(Request $request, int $resultId): Response
+    {
+        // Puede crear un usuario sólo si tiene ROLE_ADMIN
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw new HttpException(   // 403
+                Response::HTTP_FORBIDDEN,
+                "`Forbidden`: you don't have permission to access"
+            );
+        }
+        $format = Utils::getFormat($request);
+
+        /** @var Result $result */
+        $result = $this->entityManager
+            ->getRepository(Result::class)
+            ->findOneBy([ 'id' => $resultId ]);
+
+        if (null === $result) {   // 404 - Not Found
+            $message = new Message(Response::HTTP_NOT_FOUND, Response::$statusTexts[404]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
+        $this->entityManager->remove($result);
+        $this->entityManager->flush();
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }
