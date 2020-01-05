@@ -304,6 +304,30 @@ paths:
                 message: '`Unprocessable entity`:  result, userId or time is left out'
       security:
         - MiWApiSecurity: []
+  /results/{resultId}:
+    get:
+      tags:
+        - Result
+      summary: Returns a result based on a single ID
+      description: 'Returns the user identified by `resultId`.'
+      operationId: api_result_get
+      parameters:
+        - $ref: '#/components/parameters/resultId'
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Results'
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
 components:
   schemas:
     LoginRequestBody:
@@ -367,6 +391,7 @@ components:
         roles: [ 'ROLE_USER' ]
     Results:
       required:
+        - id
         - result
         - userId
         - time
@@ -472,6 +497,14 @@ components:
       name: userId
       in: path
       description: 'ID of user'
+      required: true
+      schema:
+        type: integer
+        format: int64
+    resultId:
+      name: resultId
+      in: path
+      description: 'ID of result'
       required: true
       schema:
         type: integer

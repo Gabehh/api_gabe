@@ -31,6 +31,7 @@ class Result{
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @JMS\XmlAttribute
      */
     private $id;
 
