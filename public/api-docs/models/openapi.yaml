@@ -259,7 +259,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  usuarios: { description: 'Results array', type: array, items: { $ref: '#/components/schemas/Result' } }
+                  results: { description: 'Results array', type: array, items: { $ref: '#/components/schemas/Results' } }
                 type: object
         '401':
           $ref: '#/components/responses/401_Unauthorized_Response'
@@ -267,6 +267,41 @@ paths:
           $ref: '#/components/responses/403_Forbidden_Response'
         '404':
           $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
+    post:
+      tags:
+        - Result
+      summary: Creates a new result
+      description: 'Creates a new user'
+      operationId: api_result_post
+      requestBody:
+        description: '`Result` properties to add to the system'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultsData'
+      responses:
+        '201':
+          description: '`Created`: result created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Results'
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '422':
+          description: '`Unprocessable entity`:  result, userId or time is left out'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 422
+                message: '`Unprocessable entity`:  result, userId or time is left out'
       security:
         - MiWApiSecurity: []
 components:
@@ -330,6 +365,64 @@ components:
         email: User_email@example.com
         password: User_password
         roles: [ 'ROLE_USER' ]
+    Results:
+      required:
+        - result
+        - userId
+        - time
+      properties:
+        id:
+          description: 'Result Id'
+          type: integer
+          format: int64
+        result:
+          description: 'Result'
+          type: integer
+          format: int64
+        userId:
+          description: 'User Id'
+          type: integer
+          format: int64
+        time:
+          description: 'Time'
+          type: string
+          format: date-time
+        comment:
+          description: 'comment'
+          type: string
+      type: object
+      example:
+        id: 2
+        result: 3
+        user:
+          id: 1508
+          email: 'miw@upm.es'
+          roles: [ 'ROLE_USER' ]
+        time: "2020-01-04 00:00:00"
+        comment: "example"
+    ResultsData:
+      properties:
+        result:
+          description: 'Result'
+          type: integer
+          format: int64
+        userId:
+          description: 'User Id'
+          type: integer
+          format: int64
+        time:
+          description: 'Time'
+          type: string
+          format: date-time
+        comment:
+          description: 'comment'
+          type: string
+      type: object
+      example:
+        result: 10
+        userId: 1
+        time: 2020-01-01
+        comment: "test"
     Message:
       required:
         - code
