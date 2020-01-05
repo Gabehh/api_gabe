@@ -313,6 +313,20 @@ paths:
                 message: '`Unprocessable entity`:  result or userId time is left out'
       security:
         - MiWApiSecurity: []
+    options:
+      tags:
+        - Result
+      summary: Provides the list of HTTP supported methods
+      description: 'Return a `Allow` header with a comma separated list of HTTP supported methods.'
+      operationId: api_result_options
+      responses:
+        '200':
+          description: '`Allow` header &lt;Response body is empty&gt;'
+          headers:
+            Allow:
+              description: 'List of HTTP supported methods'
+              schema:
+                type: string
   /results/{resultId}:
     get:
       tags:
@@ -395,6 +409,22 @@ paths:
           $ref: '#/components/responses/404_Resource_Not_Found_Response'
       security:
         - MiWApiSecurity: []
+    options:
+      tags:
+        - Result
+      summary: 'Provides the list of HTTP supported methods'
+      description: 'Return a `Allow` header with a comma separated list of HTTP supported methods.'
+      operationId: api_result_options_id
+      parameters:
+        - $ref: '#/components/parameters/resultId'
+      responses:
+        '200':
+          description: '`Allow` header &lt;Response body is empty&gt;'
+          headers:
+            Allow:
+              description: 'List of HTTP supported methods'
+              schema:
+                type: string
 components:
   schemas:
     LoginRequestBody:

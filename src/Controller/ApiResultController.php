@@ -10,6 +10,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -365,4 +366,36 @@ class ApiResultController extends AbstractController
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
+
+
+    /**
+     * Summary: Provides the list of HTTP supported methods
+     * Notes: Return a &#x60;Allow&#x60; header with a list of HTTP supported methods.
+     *
+     * @param  int $resultId Result id
+     * @return Response
+     * @Route(
+     *     "/{resultId}.{_format}",
+     *     defaults={"resultId" = 0, "_format": "json"},
+     *     requirements={
+     *          "resultId": "\d+",
+     *         "_format": "json|xml"
+     *     },
+     *     methods={ Request::METHOD_OPTIONS },
+     *     name="options"
+     * )
+     */
+    public function optionsAction(int $resultId): Response
+    {
+        $methods = $resultId
+            ? [ Request::METHOD_GET, Request::METHOD_PUT, Request::METHOD_DELETE ]
+            : [ Request::METHOD_GET, Request::METHOD_POST ];
+
+        return new JsonResponse(
+            null,
+            Response::HTTP_OK,
+            [ 'Allow' => implode(', ', $methods) ]
+        );
+    }
+
 }
