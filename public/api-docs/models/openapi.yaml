@@ -289,6 +289,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Results'
+        '400':
+          description: '`Bad Request`: The user does not exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 400
+                message: '`Bad Request`: The user does not exists'
         '401':
           $ref: '#/components/responses/401_Unauthorized_Response'
         '403':

@@ -140,6 +140,19 @@ class ApiResultController extends AbstractController
 
         // hay datos -> procesarlos
 
+        $user_exist = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy([ 'id' => $data['userId'] ]);
+
+        if (null === $user_exist) {    // 400 - Bad Request
+            $message = new Message(Response::HTTP_BAD_REQUEST, Response::$statusTexts[400]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
         $result = new Result(
             $data['result'],
             $data['userId'],
