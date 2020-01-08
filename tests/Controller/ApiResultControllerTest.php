@@ -55,8 +55,7 @@ class ApiResultControllerTest extends BaseTestCase
     {
         $p_data = [
             'result' => self::$faker->randomDigitNotNull,
-            'userId' => 2,
-            'comment' => "test",
+            'userId' => rand(1,2)
         ];
 
         // 201
@@ -93,8 +92,7 @@ class ApiResultControllerTest extends BaseTestCase
     {
         $p_data = [
             'result' => self::$faker->randomDigitNotNull,
-            'userId' => 1,
-            'comment' => "test",
+            'userId' => rand(1,2)
         ];
 
         // 201
@@ -210,6 +208,37 @@ class ApiResultControllerTest extends BaseTestCase
     }
 
     /**
+     * Test GET /result/users/{userId} 400 Ok
+     * @param   array $result result returned by testPostResultAction201()
+     * @return void
+     * @covers ::getResultsByUser()
+     * @depends testPostResultAction201
+     */
+    public function testResultGetActionByUser400(array $result): void
+    {
+        $headers = $this->getTokenHeaders();
+        self::$client->request(
+            Request::METHOD_GET,
+            self::RUTA_API_NEW . '/' . rand(3,10),
+            [],
+            [],
+            $headers
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $r_body = (string) $response->getContent();
+        self::assertJson($r_body);
+        self::assertContains('code', $r_body);
+        self::assertContains('message', $r_body);
+        $r_data = json_decode($r_body, true);
+        self::assertEquals(Response::HTTP_BAD_REQUEST, $r_data['message']['code']);
+        self::assertEquals(
+            Response::$statusTexts[400],
+            $r_data['message']['message']
+        );
+    }
+
+    /**
      * Test POST /result 400 Bad Request
      *
      * @return  void
@@ -221,8 +250,8 @@ class ApiResultControllerTest extends BaseTestCase
 
         $p_data = [
             'result' => self::$faker->randomDigitNotNull,
-            'userId' => "999",
-            'comment' => "test",
+            'userId' => rand(3,100),
+            'comment' => self::$faker->text,
         ];
         self::$client->request(
             Request::METHOD_POST,
@@ -259,10 +288,10 @@ class ApiResultControllerTest extends BaseTestCase
     public function testPutResultAction209(array $result): array
     {
         $headers = $this->getTokenHeaders();
+
         $p_data = [
             'result' => self::$faker->randomDigitNotNull,
-            'userId' => "1",
-            'comment' => "test2",
+            'userId' => rand(1,2)
         ];
 
         self::$client->request(
@@ -296,7 +325,7 @@ class ApiResultControllerTest extends BaseTestCase
         $headers = $this->getTokenHeaders();
         // User does not exists
         $p_data = [
-            'userId' => ""
+            'userId' => rand(3,100)
         ];
         self::$client->request(
             Request::METHOD_PUT,
@@ -401,53 +430,6 @@ class ApiResultControllerTest extends BaseTestCase
             Response::$statusTexts[422],
             $r_data['message']['message']
         );
-    }
-
-    /**
-     * Result provider (incomplete) -> 422 status code
-     *
-     * @return array result data
-     */
-    public function resultProvider422(): array
-    {
-        $result = "";
-        $userId = "";
-
-        return [
-            'nulo_01' => [ null,   $userId ],
-            'nulo_02' => [ $result, null      ],
-            'nulo_03' => [ null,   null      ],
-        ];
-    }
-
-    public function routeProvider401(): array
-    {
-        return [
-            'cgetAction401'   => [ Request::METHOD_GET,    self::RUTA_API ],
-            'getAction401'    => [ Request::METHOD_GET,    self::RUTA_API . '/1' ],
-            'postAction401'   => [ Request::METHOD_POST,   self::RUTA_API ],
-            'putAction401'    => [ Request::METHOD_PUT,    self::RUTA_API . '/1' ],
-            'deleteAction401' => [ Request::METHOD_DELETE, self::RUTA_API . '/1' ],
-        ];
-    }
-
-
-    public function routeProvider404(): array
-    {
-        return [
-            'getAction404'    => [ Request::METHOD_GET ],
-            'putAction404'    => [ Request::METHOD_PUT ],
-            'deleteAction404' => [ Request::METHOD_DELETE ],
-        ];
-    }
-
-    public function routeProvider403(): array
-    {
-        return [
-            'postAction403'   => [ Request::METHOD_POST,   self::RUTA_API ],
-            'putAction403'    => [ Request::METHOD_PUT,    self::RUTA_API . '/1' ],
-            'deleteAction403' => [ Request::METHOD_DELETE, self::RUTA_API . '/1' ],
-        ];
     }
 
     /**
@@ -568,12 +550,12 @@ class ApiResultControllerTest extends BaseTestCase
     }
 
     /**
-     * Test DELETE /result/users/{userId} 204 No Content
-     *
-     * @param   array $result user returned by testPostUserAction201()
-     * @covers  ::deleteResultByUser()
-     * @depends testPostResultAction
-     */
+ * Test DELETE /result/users/{userId} 204 No Content
+ *
+ * @param   array $result user returned by testPostUserAction201()
+ * @covers  ::deleteResultByUser()
+ * @depends testPostResultAction
+ */
     public function testDeleteResultByUserAction204(array $result): void
     {
         $headers = $this->getTokenHeaders(
@@ -595,4 +577,85 @@ class ApiResultControllerTest extends BaseTestCase
         );
         self::assertEmpty((string) $response->getContent());
     }
+
+    /**
+     * Test DELETE /result/users/{userId} 404 No Content
+     *
+     * @param   array $result user returned by testPostUserAction201()
+     * @covers  ::deleteResultByUser()
+     * @depends testPostResultAction
+     * @depends testDeleteResultByUserAction204
+     */
+    public function testDeleteResultByUserAction404(array $result): void
+    {
+        $headers = $this->getTokenHeaders(
+            self::$role_admin['email'],
+            self::$role_admin['passwd']
+        );
+        self::$client->request(
+            Request::METHOD_DELETE,
+            self::RUTA_API_NEW . '/' . $result['user_id'],
+            [],
+            [],
+            $headers
+        );
+        $response = self::$client->getResponse();
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $r_body = (string) $response->getContent();
+        self::assertContains('code', $r_body);
+        self::assertContains('message', $r_body);
+        $r_data = json_decode($r_body, true);
+        self::assertSame(Response::HTTP_NOT_FOUND, $r_data['message']['code']);
+        self::assertSame(Response::$statusTexts[404], $r_data['message']['message']);
+    }
+
+
+    /**
+     * Result provider (incomplete) -> 422 status code
+     *
+     * @return array result data
+     */
+    public function resultProvider422(): array
+    {
+        $result = "";
+        $userId = "";
+
+        return [
+            'nulo_01' => [ null,   $userId ],
+            'nulo_02' => [ $result, null      ],
+            'nulo_03' => [ null,   null      ],
+        ];
+    }
+
+    public function routeProvider401(): array
+    {
+        return [
+            'cgetAction401'   => [ Request::METHOD_GET,    self::RUTA_API ],
+            'getAction401'    => [ Request::METHOD_GET,    self::RUTA_API . '/1' ],
+            'postAction401'   => [ Request::METHOD_POST,   self::RUTA_API ],
+            'putAction401'    => [ Request::METHOD_PUT,    self::RUTA_API . '/1' ],
+            'deleteAction401' => [ Request::METHOD_DELETE, self::RUTA_API . '/1' ],
+        ];
+    }
+
+
+    public function routeProvider404(): array
+    {
+        return [
+            'getAction404'    => [ Request::METHOD_GET ],
+            'putAction404'    => [ Request::METHOD_PUT ],
+            'deleteAction404' => [ Request::METHOD_DELETE ],
+        ];
+    }
+
+    public function routeProvider403(): array
+    {
+        return [
+            'postAction403'   => [ Request::METHOD_POST,   self::RUTA_API ],
+            'putAction403'    => [ Request::METHOD_PUT,    self::RUTA_API . '/1' ],
+            'deleteAction403' => [ Request::METHOD_DELETE, self::RUTA_API . '/1' ],
+        ];
+    }
+
 }

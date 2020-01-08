@@ -31,7 +31,7 @@ class ResultTest extends TestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$result = new Result(1, 1);
+        self::$result = new Result();
         self::$faker = FakerFactoryAlias::create('es_ES');
     }
 
@@ -43,12 +43,16 @@ class ResultTest extends TestCase
      */
     public function testConstructor(): void
     {
+        $resultNumber = self::$faker->randomDigitNotNull;
+        $comment = self::$faker->text;
+        $userId = self::$faker->randomDigitNotNull;
+
         self::$result = new Result();
-        self::$result->setResult(99);
-        self::$result->setComment("comentario");
-        self::$result->setUserId(2);
-        self::assertEquals(99, self::$result->getResult());
-        self::assertEquals(2, self::$result->getUserId());
+        self::$result->setResult($resultNumber);
+        self::$result->setComment($comment);
+        self::$result->setUserId($userId);
+        self::assertEquals($resultNumber, self::$result->getResult());
+        self::assertEquals($userId, self::$result->getUserId());
     }
 
     /**
@@ -72,7 +76,7 @@ class ResultTest extends TestCase
      */
     public function testGetSetUser(): void
     {
-        $userId = 1;
+        $userId = self::$faker->randomDigitNotNull;;
         self::$result->setUserId($userId);
         static::assertEquals(
             $userId,
@@ -90,9 +94,10 @@ class ResultTest extends TestCase
      */
     public function testGetSetResult(): void
     {
-        self::$result->setResult(99);
+        $resultNumber = self::$faker->randomDigitNotNull;
+        self::$result->setResult($resultNumber);
         static::assertEquals(
-            99,
+            $resultNumber,
             self::$result->getResult()
         );
     }
@@ -106,9 +111,24 @@ class ResultTest extends TestCase
      */
     public function testGetSetComment(): void
     {
-        self::assertEmpty(
-            self::$result->getComment()
-        );
+        $text = self::$faker->text;
+        self::$result->setComment($text);
+        self::assertEquals($text,self::$result->getComment());
+    }
+
+    /**
+     * Implement testGetSetTime().
+     *
+     * @covers ::getTime()
+     * @covers ::setTime()
+     * @return void
+     * @throws Exception
+     */
+    public function testGetSetTime(): void
+    {
+        $date = self::$faker->dateTime;
+        self::$result->setTime($date);
+        self::assertEquals($date,self::$result->getTime());
     }
 
 }
