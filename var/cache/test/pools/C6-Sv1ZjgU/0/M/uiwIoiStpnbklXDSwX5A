@@ -1,0 +1,27 @@
+<?php //%255BApp%255CEntity%255CMessage%255D%255B1%255D
+
+return [PHP_INT_MAX, static function () { return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
+    $o = [
+        clone (($p = &\Symfony\Component\VarExporter\Internal\Registry::$prototypes)['JMS\\Serializer\\Annotation\\XmlRoot'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('JMS\\Serializer\\Annotation\\XmlRoot')),
+        clone ($p['JMS\\Serializer\\Annotation\\XmlNamespace'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('JMS\\Serializer\\Annotation\\XmlNamespace')),
+    ],
+    null,
+    [
+        'stdClass' => [
+            'name' => [
+                'message',
+            ],
+            'uri' => [
+                1 => 'http://www.w3.org/2005/Atom',
+            ],
+            'prefix' => [
+                1 => 'atom',
+            ],
+        ],
+    ],
+    [
+        $o[0],
+        $o[1],
+    ],
+    []
+); }];

@@ -1,0 +1,39 @@
+<?php //%255BApp%255CController%255CApiResultController%2523optionsAction%255D%255B1%255D
+
+return [PHP_INT_MAX, static function () { return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
+    $o = [
+        clone (\Symfony\Component\VarExporter\Internal\Registry::$prototypes['Symfony\\Component\\Routing\\Annotation\\Route'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Symfony\\Component\\Routing\\Annotation\\Route')),
+    ],
+    null,
+    [
+        'Symfony\\Component\\Routing\\Annotation\\Route' => [
+            'path' => [
+                '/{resultId}.{_format}',
+            ],
+            'name' => [
+                'options',
+            ],
+            'requirements' => [
+                [
+                    'resultId' => '\\d+',
+                    '_format' => 'json|xml',
+                ],
+            ],
+            'defaults' => [
+                [
+                    'resultId' => 0,
+                    '_format' => 'json',
+                ],
+            ],
+            'methods' => [
+                [
+                    'OPTIONS',
+                ],
+            ],
+        ],
+    ],
+    [
+        $o[0],
+    ],
+    []
+); }];

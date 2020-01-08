@@ -1,0 +1,51 @@
+<?php //%255BApp%255CController%255CApiResultController%2523updateResult%255D%255B1%255D
+
+return [PHP_INT_MAX, static function () { return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
+    $o = [
+        clone (($p = &\Symfony\Component\VarExporter\Internal\Registry::$prototypes)['Symfony\\Component\\Routing\\Annotation\\Route'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Symfony\\Component\\Routing\\Annotation\\Route')),
+        clone ($p['Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\Security'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\Security')),
+    ],
+    null,
+    [
+        'Symfony\\Component\\Routing\\Annotation\\Route' => [
+            'path' => [
+                '/{resultId}.{_format}',
+            ],
+            'name' => [
+                'put',
+            ],
+            'requirements' => [
+                [
+                    'resultId' => '\\d+',
+                    '_format' => 'json|xml',
+                ],
+            ],
+            'defaults' => [
+                [
+                    '_format' => null,
+                ],
+            ],
+            'methods' => [
+                [
+                    'PUT',
+                ],
+            ],
+        ],
+        'Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\Security' => [
+            'expression' => [
+                1 => 'is_granted(\'IS_AUTHENTICATED_FULLY\')',
+            ],
+            'statusCode' => [
+                1 => 401,
+            ],
+            'message' => [
+                1 => 'Invalid credentials.',
+            ],
+        ],
+    ],
+    [
+        $o[0],
+        $o[1],
+    ],
+    []
+); }];

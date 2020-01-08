@@ -1,0 +1,51 @@
+<?php //%255BApp%255CEntity%255CUser%255D%255B1%255D
+
+return [PHP_INT_MAX, static function () { return \Symfony\Component\VarExporter\Internal\Hydrator::hydrate(
+    $o = [
+        clone (($p = &\Symfony\Component\VarExporter\Internal\Registry::$prototypes)['Doctrine\\ORM\\Mapping\\Entity'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Doctrine\\ORM\\Mapping\\Entity')),
+        clone ($p['JMS\\Serializer\\Annotation\\XmlNamespace'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('JMS\\Serializer\\Annotation\\XmlNamespace')),
+        clone ($p['JMS\\Serializer\\Annotation\\AccessorOrder'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('JMS\\Serializer\\Annotation\\AccessorOrder')),
+        clone ($p['Hateoas\\Configuration\\Annotation\\Relation'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('Hateoas\\Configuration\\Annotation\\Relation')),
+        clone ($p['JMS\\Serializer\\Annotation\\XmlRoot'] ?? \Symfony\Component\VarExporter\Internal\Registry::p('JMS\\Serializer\\Annotation\\XmlRoot')),
+    ],
+    null,
+    [
+        'stdClass' => [
+            'repositoryClass' => [
+                'App\\Repository\\UserRepository',
+            ],
+            'uri' => [
+                1 => 'http://www.w3.org/2005/Atom',
+            ],
+            'prefix' => [
+                1 => 'atom',
+            ],
+            'order' => [
+                2 => 'custom',
+            ],
+            'custom' => [
+                2 => [
+                    'id',
+                    'email',
+                    'roles',
+                    '_links',
+                ],
+            ],
+            'name' => [
+                3 => 'self',
+                'user',
+            ],
+            'href' => [
+                3 => 'expr(constant(\'\\\\App\\\\Controller\\\\ApiUsersController::RUTA_API\') ~ \'/\' ~ object.getId())',
+            ],
+        ],
+    ],
+    [
+        $o[0],
+        $o[1],
+        $o[2],
+        $o[3],
+        $o[4],
+    ],
+    []
+); }];
