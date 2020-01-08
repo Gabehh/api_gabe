@@ -18,7 +18,7 @@ class Result{
      * @param int $userId
      * @param \DateTime $time
      */
-    public function __construct($result, $userId, $time)
+    public function __construct(int $result = 0, int $userId = 0, \DateTime $time = null)
     {
         $this->result = $result;
         $this->userId = $userId;
@@ -45,7 +45,7 @@ class Result{
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -109,7 +109,7 @@ class Result{
     /**
      * @return string
      */
-    public function getComment(): string
+    public function getComment(): ?string
     {
         return $this->comment;
     }

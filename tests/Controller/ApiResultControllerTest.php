@@ -54,7 +54,7 @@ class ApiResultControllerTest extends BaseTestCase
     public function testPostResultAction201(): array
     {
         $p_data = [
-            'result' => "10",
+            'result' => self::$faker->randomDigitNotNull,
             'userId' => 2,
             'comment' => "test",
         ];
@@ -92,7 +92,7 @@ class ApiResultControllerTest extends BaseTestCase
     public function testPostResultAction(): array
     {
         $p_data = [
-            'result' => "10",
+            'result' => self::$faker->randomDigitNotNull,
             'userId' => 1,
             'comment' => "test",
         ];
@@ -220,8 +220,8 @@ class ApiResultControllerTest extends BaseTestCase
         $headers = $this->getTokenHeaders();
 
         $p_data = [
-            'result' => "10",
-            'userId' => "32132131",
+            'result' => self::$faker->randomDigitNotNull,
+            'userId' => "999",
             'comment' => "test",
         ];
         self::$client->request(
@@ -260,7 +260,7 @@ class ApiResultControllerTest extends BaseTestCase
     {
         $headers = $this->getTokenHeaders();
         $p_data = [
-            'result' => "102",
+            'result' => self::$faker->randomDigitNotNull,
             'userId' => "1",
             'comment' => "test2",
         ];
