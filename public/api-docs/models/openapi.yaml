@@ -425,6 +425,69 @@ paths:
               description: 'List of HTTP supported methods'
               schema:
                 type: string
+  /results/user/{userId}:
+    get:
+      tags:
+        - Result
+      summary: Returns results bases on an user id
+      description: 'Returns all results by user id from the system that the user has access to.'
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      operationId: api_result_userget
+      responses:
+        '200':
+          description: 'Array of results'
+          content:
+            application/json:
+              schema:
+                properties:
+                  results: { description: 'Results array', type: array, items: { $ref: '#/components/schemas/Results' } }
+                type: object
+        '400':
+          description: '`Bad Request`: The user does not exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 400
+                message: '`Bad Request`: The user does not exists'
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
+    delete:
+      tags:
+        - Result
+      summary: Deletes a result by user id from the system that the user has access to
+      description: 'Deletes the result identified by `userId`.'
+      operationId: api_ressult_userdelete
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '204':
+          description: 'User deleted &lt;Response body is empty&gt;'
+        '400':
+          description: '`Bad Request`: The user does not exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 400
+                message: '`Bad Request`: The user does not exists'
+        '401':
+          $ref: '#/components/responses/401_Unauthorized_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        - MiWApiSecurity: []
 components:
   schemas:
     LoginRequestBody:

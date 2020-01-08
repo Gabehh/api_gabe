@@ -224,6 +224,69 @@ class ApiResultController extends AbstractController
 
 
     /**
+     * Summary: Returns results based on an user id
+     * Notes: Returns the result identified by &#x60;userId&#x60;.
+     *
+     * @param Request $request
+     * @param  int $userId User id
+     * @return Response
+     * @Route(
+     *
+     *     "/user/{userId}.{_format}",
+     *     defaults={ "_format": null },
+     *     requirements={
+     *          "userId": "\d+",
+     *          "_format": "json|xml"
+     *     },
+     *     methods={ Request::METHOD_GET },
+     *     name="userget"
+     * )
+     *
+     * @Security(
+     *     expression="is_granted('IS_AUTHENTICATED_FULLY')",
+     *     statusCode=401,
+     *     message="Invalid credentials."
+     * )
+     */
+    public function getResultsByUser(Request $request, int $userId): Response
+    {
+        $format = Utils::getFormat($request);
+
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy([ 'id' => $userId ]);
+
+        if (null === $user) {    // 400 - Bad Request
+            $message = new Message(Response::HTTP_BAD_REQUEST, Response::$statusTexts[400]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
+        $result = $this->entityManager
+            ->getRepository(Result::class)
+            ->findBy([ 'userId' => $userId ]);
+
+        if (empty($result)) {
+            $message = new Message(Response::HTTP_NOT_FOUND, Response::$statusTexts[404]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
+        return Utils::apiResponse(
+            Response::HTTP_OK,
+            [ 'result' => $result ],
+            $format
+        );
+    }
+
+
+    /**
      * Summary: Updates a result
      * Notes: Updates the result identified by &#x60;resultId&#x60;.
      *
@@ -362,6 +425,78 @@ class ApiResultController extends AbstractController
         }
 
         $this->entityManager->remove($result);
+        $this->entityManager->flush();
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Summary: Deletes a result by user id
+     * Notes: Deletes the result identified by &#x60;userId&#x60;.
+     *
+     * @param   Request $request
+     * @param   int $userId User id
+     * @return  Response
+     * @Route(
+     *     "/user/{userId}.{_format}",
+     *     defaults={"_format": null},
+     *     requirements={
+     *          "userId": "\d+",
+     *         "_format": "json|xml"
+     *     },
+     *     methods={ Request::METHOD_DELETE },
+     *     name="userdelete"
+     * )
+     *
+     * @Security(
+     *     expression="is_granted('IS_AUTHENTICATED_FULLY')",
+     *     statusCode=401,
+     *     message="Invalid credentials."
+     * )
+     */
+    public function deleteResultByUser(Request $request, int $userId): Response
+    {
+        // Puede crear un usuario sólo si tiene ROLE_ADMIN
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw new HttpException(   // 403
+                Response::HTTP_FORBIDDEN,
+                "`Forbidden`: you don't have permission to access"
+            );
+        }
+
+        $format = Utils::getFormat($request);
+
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy([ 'id' => $userId ]);
+
+        // 400 - Bad Request
+        if ($user === null) {
+            $message = new Message(Response::HTTP_BAD_REQUEST, Response::$statusTexts[400]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
+        $results = $this->entityManager
+            ->getRepository(Result::class)
+            ->findBy([ 'userId' => $userId ]);
+
+        if (empty($results)) {
+            $message = new Message(Response::HTTP_NOT_FOUND, Response::$statusTexts[404]);
+            return Utils::apiResponse(
+                $message->getCode(),
+                [ 'message' => $message ],
+                $format
+            );
+        }
+
+       foreach ($results as $result) {
+            $this->entityManager->remove($result);
+        }
+
         $this->entityManager->flush();
 
         return new Response(null, Response::HTTP_NO_CONTENT);
