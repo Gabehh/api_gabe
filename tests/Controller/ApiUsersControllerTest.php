@@ -44,36 +44,6 @@ class ApiUsersControllerTest extends BaseTestCase
     }
 
     /**
-     * Test GET /users 404 Not Found
-     *
-     * @return void
-     * @covers ::cgetAction
-     */
-//    public function testCGetAction404(): void
-//    {
-//        $headers = [];
-//        self::$client->request(
-//            Request::METHOD_GET,
-//            self::RUTA_API,
-//            [],
-//            [],
-//            $headers
-//        );
-//        $response = self::$client->getResponse();
-//
-//        self::assertEquals(
-//            Response::HTTP_NOT_FOUND,
-//            $response->getStatusCode()
-//        );
-//        $r_body = (string) $response->getContent();
-//        self::assertContains('code', $r_body);
-//        self::assertContains('message', $r_body);
-//        $r_data = json_decode($r_body, true);
-//        self::assertEquals(Response::HTTP_NOT_FOUND, $r_data['message']['code']);
-//        self::assertEquals(Response::$statusTexts[404], $r_data['message']['message']);
-//    }
-
-    /**
      * Test POST /users 201 Created
      *
      * @return array user data
